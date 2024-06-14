@@ -78,20 +78,25 @@ def parse_schedule(schedule_info):
     lines = schedule_info.split('\n')
     locals = {}
     
-    for i in range(0, len(lines), 5):
-        if i + 4 < len(lines):
-            course = lines[i].strip()
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        
+        if line.startswith("INF") or line.startswith("MIC") or line.startswith("MET"):
+            course = line
             type_ = lines[i + 1].strip()
             local_id = lines[i + 2].strip()
             time_range = lines[i + 3].strip().split(' - ')
             
             if len(time_range) == 2:
                 start_time, end_time = time_range
-                
                 if local_id not in locals:
                     locals[local_id] = Local(local_id, f"Address for {local_id}")
-                
                 locals[local_id].add_availability(start_time, end_time)
+            
+            i += 4  # Move to the next block of information
+        else:
+            i += 1  # Move to the next line
     
     return locals
 
